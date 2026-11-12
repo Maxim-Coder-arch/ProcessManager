@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace ProcessManager.Models;
 
-namespace ProcessManager.Models
-{
-    internal class ProcessExecutionResult
-    {
-    }
-}
+public sealed record ProcessExecutionResult(
+    DateTimeOffset StartedAt,
+    string ProgramName,
+    string Arguments,
+    int? ProcessId,
+    TimeSpan Duration,
+    int? ExitCode,
+    string? Error,
+    string StandardOutput,
+    string StandardError,
+    bool TimedOut
+);
