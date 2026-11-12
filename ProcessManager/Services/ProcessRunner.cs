@@ -76,6 +76,7 @@ public sealed class ProcessRunner
             standardOutput = await outputTask;
             standardError = await errorTask;
         }
+
         catch (Exception exception)
         {
             error = string.IsNullOrWhiteSpace(error)
@@ -90,25 +91,49 @@ public sealed class ProcessRunner
                     {
                         process.Kill(entireProcessTree: true);
                     }
+                }
+                catch (Exception terminationException)
+                {
+                    error += $"{Environment.NewLine}" +
+                             $"Ошибка завершения процесса: {terminationException.Message}";
+                }
 
+                try
+                {
                     await process.WaitForExitAsync();
 
                     exitCode = process.ExitCode;
+                }
+                catch (Exception waitException)
+                {
+                    error += $"{Environment.NewLine}" +
+                             $"Ошибка ожидания завершения: {waitException.Message}";
+                }
 
-                    if (outputTask is not null)
+                if (outputTask is not null)
+                {
+                    try
                     {
                         standardOutput = await outputTask;
                     }
+                    catch (Exception outputException)
+                    {
+                        error += $"{Environment.NewLine}" +
+                                 $"Ошибка чтения stdout: {outputException.Message}";
+                    }
+                }
 
-                    if (errorTask is not null)
+                if (errorTask is not null)
+                {
+                    try
                     {
                         standardError = await errorTask;
                     }
-                }
-                catch (Exception cleanupException)
-                {
-                    error += $"{Environment.NewLine}" +
-                             $"Ошибка завершения процесса: {cleanupException.Message}";
+                    catch (Exception outputException)
+                    {
+                        error += $"{Environment.NewLine}" +
+                                 $"Ошибка чтения stderr: {outputException.Message}";
+                    }
                 }
             }
         }
