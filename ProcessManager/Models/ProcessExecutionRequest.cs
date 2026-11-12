@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace ProcessManager.Models;
 
-namespace ProcessManager.Models
-{
-    internal class ProcessExecutionRequest
-    {
-    }
-}
+public sealed record ProcessExecutionRequest(
+    string ProgramName,
+    string Arguments,
+    TimeSpan Timeout
+);
